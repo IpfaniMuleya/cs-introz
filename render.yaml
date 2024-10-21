@@ -1,0 +1,16 @@
+# render.yaml
+services:
+  - type: web
+    name: cs-introz
+    env: node
+    plan: free # You can change this based on your plan
+    buildCommand: npm install
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+    autoDeploy: true # Auto-deploy on git push to main branch
+    branch: main # The branch you want to deploy from
+    healthCheckPath: /
+    region: oregon # Example region; adjust based on your preference
+
