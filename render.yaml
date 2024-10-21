@@ -3,14 +3,14 @@ services:
   - type: web
     name: cs-introz
     env: node
-    plan: free # You can change this based on your plan
+    plan: free 
     buildCommand: npm install
     startCommand: npm run start
     envVars:
       - key: NODE_ENV
         value: production
-    autoDeploy: true # Auto-deploy on git push to main branch
-    branch: main # The branch you want to deploy from
+    autoDeploy: false # Auto-deploy on git push to main branch
+    branch: master
     healthCheckPath: /
-    region: oregon # Example region; adjust based on your preference
+    region: oregon
 
