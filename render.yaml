@@ -1,0 +1,16 @@
+# render.yaml
+services:
+  - type: web
+    name: cs-introz
+    env: node
+    plan: free 
+    buildCommand: npm install
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+    autoDeploy: false # Auto-deploy on git push to main branch
+    branch: master
+    healthCheckPath: /
+    region: oregon
+
