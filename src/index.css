@@ -1,3 +1,25 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@media (max-width: 640px) {
+    nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    nav a span,
+    nav button span {
+        display: none; /* Hide text labels on smaller screens */
+    }
+
+    /* Adjust spacing and layout for exercises */
+    .container {
+        padding: 1rem;
+    }
+    .grid {
+        gap: 1rem; /* Reduce grid gap on smaller screens */
+    }
+}

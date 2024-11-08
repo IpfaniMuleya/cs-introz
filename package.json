@@ -10,8 +10,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@pyodide/pyodide": "^0.17.1",
+    "ace-builds": "^1.36.4",
     "lucide-react": "^0.344.0",
+    "pyodide": "^0.26.3",
     "react": "^18.3.1",
+    "react-ace": "^13.0.0",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.22.3"
   },

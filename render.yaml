@@ -2,15 +2,10 @@
 services:
   - type: web
     name: cs-introz
-    env: node
-    plan: free 
-    buildCommand: npm install
-    startCommand: npm run start
-    envVars:
-      - key: NODE_ENV
-        value: production
-    autoDeploy: false # Auto-deploy on git push to main branch
+    env: static
+    plan: free
+    buildCommand: npm run build
+    publishPath: dist
     branch: master
-    healthCheckPath: /
+    autoDeploy: true
     region: oregon
-

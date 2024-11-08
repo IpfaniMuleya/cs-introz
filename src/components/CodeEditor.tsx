@@ -1,52 +1,78 @@
 import React, { useState, useEffect } from 'react';
 import { Play } from 'lucide-react';
 
-interface CodeEditorProps {
-    language: string;
+declare global {
+    interface Window {
+        Sk: any;
+    }
 }
 
-const CodeEditor: React.FC<CodeEditorProps> = ({ language }) => {
-    const [code, setCode] = useState('');
-    const [output, setOutput] = useState('');
+const CodeEditor: React.FC = () => {
+    const [code, setCode] = useState<string>(`print("Hello, World!")`);
+    const [output, setOutput] = useState<string>('');
+    const [skulptReady, setSkulptReady] = useState<boolean>(false);
 
     useEffect(() => {
-        // Sets the initial code based on the selected language
-        const initialCode = getInitialCode(language);
-        setCode(initialCode);
-    }, [language]);
+        const loadSkulpt = () => {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js';
+            script.async = true;
+            script.onload = () => {
+                const scriptStdlib = document.createElement('script');
+                scriptStdlib.src = 'https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js';
+                scriptStdlib.async = true;
+                scriptStdlib.onload = () => {
+                    setSkulptReady(true);
+                };
+                document.body.appendChild(scriptStdlib);
+            };
+            document.body.appendChild(script);
+        };
 
-    const getInitialCode = (lang: string) => {
-        switch (lang) {
-            case 'javascript':
-                return 'function greet(name) {\n  console.log("Hello, " + name + "!");\n}\n\ngreet("World");';
-            case 'python':
-                return 'def greet(name):\n    print(f"Hello, {name}!")\n\ngreet("World")';
-            case 'cpp':
-                return '#include <iostream>\n\nvoid greet(std::string name) {\n    std::cout << "Hello, " << name << "!" << std::endl;\n}\n\nint main() {\n    greet("World");\n    return 0;\n}';
-            default:
-                return '// Start coding here';
-        }
-    };
-
-    const handleCodeChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setCode(e.target.value);
-    };
+        loadSkulpt();
+    }, []);
 
     const runCode = () => {
-        // We could send the code to a backend for execution
-        // I just simulate output
-        setOutput(`Running ${language} code...\n${code}\n\nOutput:\nHello, World!`);
+        if (!skulptReady) {
+            setOutput('Skulpt is still loading...');
+            return;
+        }
+        setOutput('');
+
+        const outf = (text: string) => {
+            setOutput(prevOutput => prevOutput + text);
+        };
+
+        const builtinRead = (x: string) => {
+            if (
+                window.Sk.builtinFiles === undefined ||
+                window.Sk.builtinFiles['files'][x] === undefined
+            ) {
+                throw `File not found: '${x}'`;
+            }
+            return window.Sk.builtinFiles['files'][x];
+        };
+
+        window.Sk.configure({ output: outf, read: builtinRead });
+
+        (async () => {
+            try {
+                await window.Sk.importMainWithBody('<stdin>', false, code, true);
+            } catch (err: any) {
+                setOutput(err.toString());
+            }
+        })();
     };
 
     return (
         <div className="bg-white p-6 rounded-lg shadow-md mb-8">
-            <h2 className="text-2xl font-bold mb-4 text-indigo-600">Code Editor</h2>
+            <h2 className="text-2xl font-bold mb-4 text-indigo-600">Python Code Editor</h2>
             <textarea
                 value={code}
-                onChange={handleCodeChange}
+                onChange={e => setCode(e.target.value)}
                 className="w-full h-64 p-4 font-mono text-sm bg-gray-800 text-white rounded-md mb-4"
             />
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center mt-4">
                 <button
                     onClick={runCode}
                     className="flex items-center space-x-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
@@ -54,7 +80,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({ language }) => {
                     <Play size={20} />
                     <span>Run Code</span>
                 </button>
-                <span className="text-gray-600">Language: {language}</span>
+                <span className="text-gray-600">Language: Python</span>
             </div>
             {output && (
                 <div className="mt-4">
